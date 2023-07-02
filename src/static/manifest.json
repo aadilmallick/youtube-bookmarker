@@ -1,0 +1,38 @@
+{
+  "name": "Youtube Bookmarker",
+  "description": "A bookmark extension for your videos",
+  "version": "1.0.0",
+  "manifest_version": 3,
+  "icons": {
+    "16": "icon.png",
+    "48": "icon.png",
+    "128": "icon.png"
+  },
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "React Extension",
+    "default_icon": "icon.png"
+  },
+  "permissions": ["storage"],
+  "host_permissions": ["https://*.youtube.com/watch*"],
+  "options_page": "options.html",
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://*.youtube.com/watch*"],
+      "js": ["contentScript.js"]
+    }
+  ],
+  "commands": {
+    "save_bookmark": {
+      "suggested_key": {
+        "default": "Ctrl+B",
+        "linux": "Ctrl+B",
+        "mac": "Command+B"
+      },
+      "description": "Send a 'toggle-feature' event"
+    }
+  }
+}
