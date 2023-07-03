@@ -22,8 +22,8 @@ interface SyncStorage {
   videos?: Video[];
 }
 
-type SyncStorageKeys = (keyof SyncStorage)[];
-type LocalStorageKeys = (keyof LocalStorage)[];
+export type SyncStorageKeys = (keyof SyncStorage)[];
+export type LocalStorageKeys = (keyof LocalStorage)[];
 
 export const defaultSyncOptions: Required<SyncStorage> = {
   options: {},
@@ -60,6 +60,15 @@ function storeLocal(obj: LocalStorage): Promise<void> {
   });
 }
 
+function isTimestampUnique(timestamp: Timestamp, video: Video) {
+  for (let bookmark of video.timestamps) {
+    if (bookmark.timestamp === timestamp.timestamp) {
+      return false;
+    }
+  }
+  return true;
+}
+
 // export async function addBookmarkSync(bookmark: Video) {
 //   await getVideoSync(bookmark.id);
 // }
@@ -68,10 +77,16 @@ export async function addTimestampSync(
   videoId: Video["id"],
   videoTitle: Video["title"]
 ) {
+  if (videoId.length < 4) throw new Error("videoId is required");
   const videos = await getSyncBookmarks();
   const video = videos.find((video) => video.id === videoId);
   // if video exists, add timestamp to it
   if (video) {
+    // TODO: check if timestamp already exists, by creating helper function
+    if (!isTimestampUnique(timestamp, video)) {
+      console.log("timestamp already exists");
+      return;
+    }
     video.timestamps.push(timestamp);
     await storeSync({ videos });
   } else {
@@ -103,10 +118,10 @@ export async function getSyncBookmarks(): Promise<Video[]> {
   return videos || [];
 }
 
-export async function getVideoSync(id: Video["id"]): Promise<Video[]> {
+export async function getVideoSync(id: Video["id"]): Promise<Video | null> {
   const keys: SyncStorageKeys = ["videos"];
   const { videos } = await getSync(keys);
-  return videos.filter((video) => video.id === id) || [];
+  return videos.filter((video) => video.id === id)[0] || null;
 }
 
 function getLocal(keys: LocalStorageKeys): Promise<LocalStorage> {

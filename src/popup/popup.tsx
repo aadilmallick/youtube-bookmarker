@@ -1,12 +1,14 @@
 import React from "react";
 import { createRoot } from "react-dom/client";
 import "./popup.scss";
+import { CurrentVideo } from "./CurrentVideo";
+import { SavedVideos } from "./SavedVideos";
 
 const App: React.FC<{}> = () => {
   // TODO: 1. create two tabs: current video, and saved videos
   // TODO 2. Load all saved videos
   const [tab, setTab] = React.useState<"currentVideo" | "savedVideos">(
-    "savedVideos"
+    "currentVideo"
   );
   return (
     <div>
@@ -25,6 +27,7 @@ const App: React.FC<{}> = () => {
           Saved Videos
         </div>
       </div>
+      {tab === "currentVideo" ? <CurrentVideo /> : <SavedVideos />}
     </div>
   );
 };

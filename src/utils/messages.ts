@@ -5,13 +5,18 @@
  **********************************************/
 
 export enum MessageTypes {
-  SAVE_VIDEO = "SAVE_VIDEO",
+  ADD_BOOKMARK = "ADD_BOOKMARK",
   ASK_VIDEO_ID = "ASK_VIDEO_ID",
 }
 
 export type SendingMessage = {
   type: Message;
   payload?: { videoId?: string; videoTitle?: string };
+};
+
+export type Response = {
+  videoId?: string;
+  videoTitle?: string;
 };
 
 export type Message = keyof typeof MessageTypes;
@@ -26,37 +31,21 @@ type responseCallback = (response?) => void;
 
 export const sendMessageToContentScript = async (
   message: Message,
-  payload?: SendingMessage["payload"],
-  responseCallback?: responseCallback
-) => {
+  payload?: SendingMessage["payload"]
+): Promise<any> => {
   const tabs = await chrome.tabs.query({ active: true, currentWindow: true });
-  const responseFunc =
-    responseCallback ||
-    function (response) {
-      return true;
-    };
-  chrome.tabs.sendMessage(
-    tabs[0].id!,
-    {
-      type: message,
-      payload,
-    },
-    responseFunc
-  );
+  return chrome.tabs.sendMessage(tabs[0].id!, {
+    type: message,
+    payload: payload || {},
+  });
 };
 
-// ? switched parameter order
+// * works ✅
 export const sendMessageFromContentScript = async (
   message: Message,
-  payload?: SendingMessage["payload"],
-  responseCallback?: responseCallback
-) => {
-  const responseFunc =
-    responseCallback ||
-    function (response) {
-      return true;
-    };
-  chrome.runtime.sendMessage({ type: message, payload }, responseFunc);
+  payload?: SendingMessage["payload"]
+): Promise<any> => {
+  return chrome.runtime.sendMessage({ type: message, payload: payload || {} });
 };
 
 /**********************************************
@@ -69,8 +58,9 @@ type ReceivingMessageFunc = (
   message?: SendingMessage,
   sender?: chrome.runtime.MessageSender,
   sendResponse?: (response?: any) => void
-) => void;
+) => Promise<void>;
 
+// * works ✅
 /**
  *
  * @desc to avoid error, you must send a response in the callback function.
@@ -85,8 +75,8 @@ export const addMessageListener = (
     sendResponse: (response?: any) => void
   ) => {
     if (message.type === receivingMessage) {
-      func(message, sender, sendResponse);
-      sendResponse();
+      func(message, sender, sendResponse).then(() => true);
+      return true;
     }
     return true;
   };

@@ -5,6 +5,7 @@ import { createRoot } from "react-dom/client";
 import "./contentScript.css";
 import {
   MessageTypes,
+  Response,
   addMessageListener,
   removeMessageListener,
   sendMessageFromContentScript,
@@ -26,53 +27,59 @@ const BookmarkButton = () => {
   const [videoId, setVideoId] = React.useState<string>("");
   useEffect(() => {
     async function sendMessage() {
-      // await sendMessageFromContentScript(
-      //   MessageTypes.ASK_VIDEO_ID,
-      //   {},
-      //   (response: { videoId: string }) => {
-      //     console.log("response in content script", response);
-      //   }
-      // );
-      const response = await chrome.runtime.sendMessage({
-        type: MessageTypes.ASK_VIDEO_ID,
-      });
-      console.log("response in content script", response);
+      const response: Response = await sendMessageFromContentScript(
+        MessageTypes.ASK_VIDEO_ID
+      );
+      console.group(`${MessageTypes.ASK_VIDEO_ID} [contentscript] response`);
+      console.log(response);
+      console.groupEnd();
+
+      setVideoId(response.videoId);
     }
 
     sendMessage();
-    // const callback = addMessageListener(
-    //   MessageTypes.SAVE_VIDEO,
-    //   (message, sender, sendResponse) => {
-    //     console.log("get url");
-    //     if (!message.payload) throw new Error("no payload");
-    //     setVideoId(message.payload.videoId);
-    //     sendResponse({ message: "get url" });
-    //   }
-    // );
-
-    // return () => removeMessageListener(callback);
   }, []);
 
-  // useEffect(() => {
-  //   console.log("video id", videoId);
-  //   async function getStorage() {
-  //     const videos = await getSyncBookmarks();
-  //     console.log("videos", videos);
-  //   }
+  useEffect(() => {
+    const callback = addMessageListener(
+      MessageTypes.ADD_BOOKMARK,
+      async (message, sender, sendResponse) => {
+        console.group(`${MessageTypes.ADD_BOOKMARK} [contentscript] message`);
+        console.log(message);
+        console.groupEnd();
+        const vidId = message.payload.videoId;
+        // if (vidId) setVideoId(vidId);
+        console.log("vidId", vidId);
+        // setVideoId(vidId);
+        await addBookmark(vidId);
+        sendResponse({ success: true });
+      }
+    );
 
-  //   getStorage();
-  // }, [videoId]);
-  const addBookmark = async () => {
-    // TODO: 1. save video, if not saved already
-    // TODO 2. save timestamp
-    // TODO 3. connect keyboard shortcut to this method
+    return () => {
+      chrome.runtime.onMessage.removeListener(callback);
+    };
+  }, []);
+
+  // TODO: add listener for keyboard shortcut
+
+  useEffect(() => {
+    async function getStorage() {
+      const videos = await getSyncBookmarks();
+      console.table(videos);
+    }
+
+    getStorage();
+  }, [videoId]);
+  const addBookmark = async (videoId: string) => {
     const videoTitle = document.querySelector(
       "#below #title h1 yt-formatted-string"
     ).textContent;
-
+    console.log("time", convertSecondsToTimestamp(ytPlayer.currentTime));
+    console.log("videoId in addBookmark", videoId);
     await addTimestampSync(
       {
-        description: "test",
+        description: "new bookmark",
         timestamp: convertSecondsToTimestamp(ytPlayer.currentTime),
       },
       videoId,
@@ -80,7 +87,7 @@ const BookmarkButton = () => {
     );
   };
   return (
-    <button className="ytp-button up-btn" onClick={addBookmark}>
+    <button className="ytp-button up-btn" onClick={() => addBookmark(videoId)}>
       <span>B+</span>
     </button>
   );
@@ -88,7 +95,11 @@ const BookmarkButton = () => {
 
 const container = document.createElement("div");
 container.classList.add("my-inline-block-div");
+container.id = "my-extension-root";
 const root = createRoot(container);
-document.querySelector(".ytp-right-controls").prepend(container);
+const controls = document.querySelector(".ytp-right-controls");
 
-root.render(<BookmarkButton />);
+if (!controls.querySelector("#my-extension-root")) {
+  controls.prepend(container);
+  root.render(<BookmarkButton />);
+}
