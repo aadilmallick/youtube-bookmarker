@@ -6,7 +6,7 @@
 
 interface LocalStorage {}
 
-interface Timestamp {
+export interface Timestamp {
   timestamp: string;
   description: string;
 }
@@ -60,6 +60,51 @@ function storeLocal(obj: LocalStorage): Promise<void> {
   });
 }
 
+// delete the specified timestamp by seeing where they match
+// any video that has the same timestring as the timestamp, delete that timestamp
+export async function deleteTimestampSync(
+  timestamp: string,
+  videoId: Video["id"]
+) {
+  if (videoId.length < 4) throw new Error("videoId is required");
+  // const video = await getVideoSync(videoId);
+  const videos = await getSyncBookmarks();
+  const vidIndex = videos.findIndex((video) => video.id === videoId);
+  const video = videos[vidIndex];
+  if (!video) throw new Error("video not found");
+  // remove that one timestamp that we want to delete
+  const timestamps = video.timestamps.filter(
+    (bookmark) => bookmark.timestamp !== timestamp
+  );
+  // mutation
+  video.timestamps = timestamps;
+  videos[vidIndex] = video;
+  await storeSync({ videos });
+}
+
+export async function deleteVideoSync(videoId: Video["id"]) {
+  const videos = await getSyncBookmarks();
+  // const vidIndex = videos.findIndex((video) => video.id === videoId);
+  // const newVideos = videos.splice(vidIndex, 1);
+  await storeSync({ videos: videos.filter((video) => video.id !== videoId) });
+}
+
+export async function editDescriptionSync(
+  videoId: Video["id"],
+  timestamp: Timestamp
+) {
+  const videos = await getSyncBookmarks();
+  const vidIndex = videos.findIndex((video) => video.id === videoId);
+  const video = videos[vidIndex];
+  if (!video) throw new Error("video not found");
+  const timestampIndex = video.timestamps.findIndex(
+    (bookmark) => bookmark.timestamp === timestamp.timestamp
+  );
+  video.timestamps[timestampIndex].description = timestamp.description;
+  videos[vidIndex] = video;
+  await storeSync({ videos });
+}
+
 function isTimestampUnique(timestamp: Timestamp, video: Video) {
   for (let bookmark of video.timestamps) {
     if (bookmark.timestamp === timestamp.timestamp) {
@@ -99,18 +144,6 @@ export async function addTimestampSync(
     });
   }
 }
-// export async function getStoredDarkMode(): Promise<SyncStorage["darkMode"]> {
-//   const keys: SyncStorageKeys = ["bookmarks"];
-// }
-
-// export const storeSyncBookmarks = async (bookmarks: Bookmark[]) => {
-
-// }
-/**********************************************
- *                                           *
- *           getting data                  *
- *                                           *
- **********************************************/
 
 export async function getSyncBookmarks(): Promise<Video[]> {
   const keys: SyncStorageKeys = ["videos"];
@@ -147,12 +180,6 @@ export function getSync(keys: SyncStorageKeys): Promise<SyncStorage> {
     });
   });
 }
-
-/**********************************************
- *                                           *
- *            clearing data                       *
- *                                           *
- **********************************************/
 
 /**
  *

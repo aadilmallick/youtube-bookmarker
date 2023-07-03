@@ -7,17 +7,15 @@
 export enum MessageTypes {
   ADD_BOOKMARK = "ADD_BOOKMARK",
   ASK_VIDEO_ID = "ASK_VIDEO_ID",
+  SEEK_TO_TIME = "SEEK_TO_TIME",
 }
 
 export type SendingMessage = {
   type: Message;
-  payload?: { videoId?: string; videoTitle?: string };
+  payload?: { videoId?: string; videoTitle?: string; time?: number };
 };
 
-export type Response = {
-  videoId?: string;
-  videoTitle?: string;
-};
+export type Response = SendingMessage["payload"];
 
 export type Message = keyof typeof MessageTypes;
 

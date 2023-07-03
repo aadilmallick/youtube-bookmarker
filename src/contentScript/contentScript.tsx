@@ -1,6 +1,6 @@
 // TODO: content script
 
-import React, { useEffect } from "react";
+import React, { useEffect, useRef } from "react";
 import { createRoot } from "react-dom/client";
 import "./contentScript.css";
 import {
@@ -17,6 +17,8 @@ import {
   getSync,
   getSyncBookmarks,
 } from "../utils/storage";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const ytPlayer = document.querySelector(".video-stream") as HTMLVideoElement;
 
@@ -25,6 +27,8 @@ const ytPlayer = document.querySelector(".video-stream") as HTMLVideoElement;
 // TODO: connect keyboard shortcut to this method
 const BookmarkButton = () => {
   const [videoId, setVideoId] = React.useState<string>("");
+
+  // ask for video id at start
   useEffect(() => {
     async function sendMessage() {
       const response: Response = await sendMessageFromContentScript(
@@ -40,6 +44,7 @@ const BookmarkButton = () => {
     sendMessage();
   }, []);
 
+  // keyboard shortcut listener
   useEffect(() => {
     const callback = addMessageListener(
       MessageTypes.ADD_BOOKMARK,
@@ -48,9 +53,7 @@ const BookmarkButton = () => {
         console.log(message);
         console.groupEnd();
         const vidId = message.payload.videoId;
-        // if (vidId) setVideoId(vidId);
         console.log("vidId", vidId);
-        // setVideoId(vidId);
         await addBookmark(vidId);
         sendResponse({ success: true });
       }
@@ -61,8 +64,25 @@ const BookmarkButton = () => {
     };
   }, []);
 
-  // TODO: add listener for keyboard shortcut
+  useEffect(() => {
+    const callback = addMessageListener(
+      MessageTypes.SEEK_TO_TIME,
+      async (message, sender, sendResponse) => {
+        // console.group(`${MessageTypes.SEEK_TO_TIME} [contentscript] message`);
+        // console.log(message);
+        // console.groupEnd();
+        const time = message.payload.time;
+        ytPlayer.currentTime = time;
+        ytPlayer.play();
+        sendResponse({ success: true });
+      }
+    );
 
+    return () => {
+      chrome.runtime.onMessage.removeListener(callback);
+    };
+  }, []);
+  // logger
   useEffect(() => {
     async function getStorage() {
       const videos = await getSyncBookmarks();
@@ -85,12 +105,28 @@ const BookmarkButton = () => {
       videoId,
       videoTitle
     );
+    toast("bookmark added", {
+      position: "top-right",
+      autoClose: 2000,
+    });
   };
+
   return (
-    <button className="ytp-button up-btn" onClick={() => addBookmark(videoId)}>
-      <span>B+</span>
-    </button>
+    <>
+      {/* <ToastContainer /> */}
+      <button
+        className="ytp-button up-btn"
+        onClick={() => addBookmark(videoId)}
+      >
+        <span>B+</span>
+      </button>
+    </>
   );
+};
+
+// this is how you position the toast: use inline styles
+const Modal = () => {
+  return <ToastContainer style={{ top: "8rem" }} />;
 };
 
 const container = document.createElement("div");
@@ -102,4 +138,16 @@ const controls = document.querySelector(".ytp-right-controls");
 if (!controls.querySelector("#my-extension-root")) {
   controls.prepend(container);
   root.render(<BookmarkButton />);
+}
+
+const modalContainer = document.createElement("div");
+modalContainer.classList.add("my-modal-container");
+modalContainer.id = "my-modal-container";
+modalContainer.style.fontSize = "16px";
+
+const videoContainer = document.querySelector(".html5-video-container");
+const root2 = createRoot(modalContainer);
+if (!videoContainer?.querySelector("#my-modal-container")) {
+  videoContainer?.prepend(modalContainer);
+  root2.render(<Modal />);
 }

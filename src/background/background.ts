@@ -22,8 +22,16 @@ chrome.runtime.onInstalled.addListener(async () => {
   //   Object.keys(defaultSyncOptions) as SyncStorageKeys
   // );
   // if (!stored) {
-  await storeSync(defaultSyncOptions);
   // }
+  // await storeSync(defaultSyncOptions);
+});
+
+chrome.storage.sync.getBytesInUse(null, function (bytesUsed) {
+  // Calculate the usage in kilobytes
+  var kilobytesUsed = bytesUsed / 1024;
+
+  // Log the usage
+  console.log("Sync storage usage: " + kilobytesUsed + " KB");
 });
 
 // callback function is async, and you can choose whether to send response.
@@ -80,6 +88,18 @@ chrome.tabs.onActivated.addListener(async (tab) => {
   await chrome.scripting.executeScript({
     files: ["contentScript.js"],
     target: { tabId: tab.tabId },
+  });
+  console.log("script injectied");
+});
+
+chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
+  console.log(tab);
+  const videoId = await getTheVideoId();
+  if (!videoId) return;
+
+  await chrome.scripting.executeScript({
+    files: ["contentScript.js"],
+    target: { tabId: tabId },
   });
   console.log("script injectied");
 });
