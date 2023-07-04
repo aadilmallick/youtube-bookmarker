@@ -3,6 +3,8 @@ import { createRoot } from "react-dom/client";
 import "./popup.scss";
 import { CurrentVideo } from "./CurrentVideo";
 import { SavedVideos } from "./SavedVideos";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const App: React.FC<{}> = () => {
   // TODO: 1. create two tabs: current video, and saved videos
@@ -11,7 +13,7 @@ const App: React.FC<{}> = () => {
     "currentVideo"
   );
   return (
-    <div>
+    <>
       {/* tabs */}
       <div className="tabs">
         <div
@@ -28,7 +30,8 @@ const App: React.FC<{}> = () => {
         </div>
       </div>
       {tab === "currentVideo" ? <CurrentVideo /> : <SavedVideos />}
-    </div>
+      <ToastContainer />
+    </>
   );
 };
 

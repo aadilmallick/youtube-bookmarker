@@ -6,18 +6,19 @@ import {
   getVideoSync,
 } from "../utils/storage";
 import { getTheVideoId } from "../background/background";
+import { FaCopy } from "react-icons/fa";
+import { toast } from "react-toastify";
 
-// TODO: add delete functionality
-// TODO: add go to current video functionality
-// TODO: add link functionality
 export const SavedVideos = () => {
   const [videos, setVideos] = React.useState<Video[]>([]);
-
+  const [loading, setLoading] = React.useState<boolean>(true);
   useEffect(() => {
     async function getStorage() {
+      setLoading(true);
       const videos = await getSyncBookmarks();
       console.table(videos);
       setVideos(videos);
+      setLoading(false);
     }
 
     getStorage();
@@ -30,8 +31,24 @@ export const SavedVideos = () => {
 
   if (videos.length === 0) return <p>No videos saved</p>;
 
+  if (loading) return <p>Loading...</p>;
+
   return (
     <div>
+      <div
+        className="json-icon"
+        onClick={() => {
+          setLoading(true);
+          navigator.clipboard.writeText(JSON.stringify(videos));
+          toast("Copied to clipboard", {
+            autoClose: 1000,
+          });
+          setLoading(false);
+        }}
+      >
+        <FaCopy color="gray" />
+        <p>Export JSON</p>
+      </div>
       {videos.map((video) => (
         <VideoRow video={video} key={video.id} onDelete={onDelete} />
       ))}

@@ -6,4 +6,10 @@
   display: inline-block;
   transform: translateY(-1.5rem);
   font-size: 20px !important;
+  span {
+    transition: color 0.4s ease;
+    &:hover {
+      color: #1fd3a9;
+    }
+  }
 }

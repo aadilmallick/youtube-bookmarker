@@ -145,3 +145,16 @@ a {
   background-color: rgba(0, 0, 0, 0.5);
   z-index: 9;
 }
+
+.json-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.5rem;
+  transition: $transition;
+  cursor: pointer;
+  &:hover {
+    background-color: whitesmoke;
+  }
+}

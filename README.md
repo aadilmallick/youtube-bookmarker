@@ -1,3 +1,7 @@
+# My bookmarks
+
+My bookmarks are saved [here](https://codebeautify.org/jsonviewer/y23907db3)
+
 # Current task
 
 1.  List saved videos on popup ✅
@@ -7,7 +11,7 @@
 5.  Add seek to current timestamp functionality ✅
 6.  Add delete timestamp functionality ✅
 7.  Add delete video functionality ✅
-8.  Add edit bookmark description funcitonality
+8.  Add edit bookmark description funcitonality ✅
 9.  Add "bookmark added" feedback toast ✅
 10. Add keyboard shortcut and connect it. This will require messaging. ✅
 11. Add injecting content script automatically whenever on youtube, listening for tab updates ✅
@@ -15,7 +19,9 @@
 13. Visually show current timestamp on video, like little flags
 14. Add page refresh notification, by catching message passing error
 15. Try to see how we can do message passing listening more gracefully. Try only synchronous messaging, and see if that fixes it.
-16. Find a way to reduce the number of times the content script is injected:
+16. Make bookmark button more obvious to click on, change hover
+17. add export JSON functionality, and then create something to create a table of videos
+18. Find a way to reduce the number of times the content script is injected:
 
     ```javascript
     // Create a Set to store the tab IDs where the content script has been injected

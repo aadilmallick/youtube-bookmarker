@@ -10,7 +10,7 @@
   },
   "action": {
     "default_popup": "popup.html",
-    "default_title": "React Extension",
+    "default_title": "Youtube Bookmarker. Ctrl + B to bookmark",
     "default_icon": "icon.png"
   },
   "permissions": ["storage", "scripting"],
@@ -34,15 +34,5 @@
       },
       "description": "Send a 'toggle-feature' event"
     }
-  },
-  "web_accessible_resources": [
-    {
-      "resources": ["images/*"],
-      "matches": ["<all_urls>"]
-    },
-    {
-      "resources": ["icon.png"],
-      "matches": ["<all_urls>"]
-    }
-  ]
+  }
 }

@@ -59,7 +59,7 @@ export async function getTheVideoId() {
   const queryParams = currentTab.url.split("?")[1];
   if (!queryParams) return;
   const urlParams = new URLSearchParams(queryParams);
-  console.log("urlprmas", Object(urlParams));
+  // console.log("urlprmas", Object(urlParams));
   const videoId = urlParams.get("v");
   console.log("videoId", videoId);
   return videoId;
