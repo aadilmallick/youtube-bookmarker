@@ -59,7 +59,9 @@ export async function getTheVideoId() {
   const queryParams = currentTab.url.split("?")[1];
   if (!queryParams) return;
   const urlParams = new URLSearchParams(queryParams);
+  console.log("urlprmas", Object(urlParams));
   const videoId = urlParams.get("v");
+  console.log("videoId", videoId);
   return videoId;
 }
 
@@ -81,7 +83,6 @@ chrome.commands.onCommand.addListener(async (command) => {
 // TODO: automatically inject content script
 
 chrome.tabs.onActivated.addListener(async (tab) => {
-  console.log(tab);
   const videoId = await getTheVideoId();
   if (!videoId) return;
 
@@ -89,11 +90,11 @@ chrome.tabs.onActivated.addListener(async (tab) => {
     files: ["contentScript.js"],
     target: { tabId: tab.tabId },
   });
-  console.log("script injectied");
+  console.log("script injectied from onActivated listener");
 });
 
 chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
-  console.log(tab);
+  if (tab.status !== "complete") return;
   const videoId = await getTheVideoId();
   if (!videoId) return;
 
@@ -101,5 +102,5 @@ chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
     files: ["contentScript.js"],
     target: { tabId: tabId },
   });
-  console.log("script injectied");
+  console.log("script injectied from onUpdated listener");
 });

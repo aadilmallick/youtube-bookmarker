@@ -34,5 +34,15 @@
       },
       "description": "Send a 'toggle-feature' event"
     }
-  }
+  },
+  "web_accessible_resources": [
+    {
+      "resources": ["images/*"],
+      "matches": ["<all_urls>"]
+    },
+    {
+      "resources": ["icon.png"],
+      "matches": ["<all_urls>"]
+    }
+  ]
 }
