@@ -6,8 +6,8 @@ import "./contentScript.css";
 import {
   MessageTypes,
   Response,
-  addMessageListener,
-  removeMessageListener,
+  addMessageListenerAsync,
+  removeMessageListenerAsync,
   sendMessageFromContentScript,
 } from "../utils/messages";
 import { convertSecondsToTimestamp } from "./lib";
@@ -34,9 +34,6 @@ const BookmarkButton = () => {
       const response: Response = await sendMessageFromContentScript(
         MessageTypes.ASK_VIDEO_ID
       );
-      console.group(`${MessageTypes.ASK_VIDEO_ID} [contentscript] response`);
-      console.log(response);
-      console.groupEnd();
 
       setVideoId(response.videoId);
     }
@@ -46,14 +43,10 @@ const BookmarkButton = () => {
 
   // keyboard shortcut listener
   useEffect(() => {
-    const callback = addMessageListener(
+    const callback = addMessageListenerAsync(
       MessageTypes.ADD_BOOKMARK,
       async (message, sender, sendResponse) => {
-        console.group(`${MessageTypes.ADD_BOOKMARK} [contentscript] message`);
-        console.log(message);
-        console.groupEnd();
         const vidId = message.payload.videoId;
-        console.log("vidId", vidId);
         await addBookmark(vidId);
         sendResponse({ success: true });
       }
@@ -65,12 +58,9 @@ const BookmarkButton = () => {
   }, []);
 
   useEffect(() => {
-    const callback = addMessageListener(
+    const callback = addMessageListenerAsync(
       MessageTypes.SEEK_TO_TIME,
       async (message, sender, sendResponse) => {
-        // console.group(`${MessageTypes.SEEK_TO_TIME} [contentscript] message`);
-        // console.log(message);
-        // console.groupEnd();
         const time = message.payload.time;
         ytPlayer.currentTime = time;
         ytPlayer.play();
@@ -86,7 +76,6 @@ const BookmarkButton = () => {
   useEffect(() => {
     async function getStorage() {
       const videos = await getSyncBookmarks();
-      console.table(videos);
     }
 
     getStorage();
@@ -95,11 +84,9 @@ const BookmarkButton = () => {
     const videoTitle = document.querySelector(
       "#below #title h1 yt-formatted-string"
     ).textContent;
-    console.log("time", convertSecondsToTimestamp(ytPlayer.currentTime));
-    console.log("videoId in addBookmark", videoId);
     await addTimestampSync(
       {
-        description: "new bookmark",
+        description: "hi",
         timestamp: convertSecondsToTimestamp(ytPlayer.currentTime),
       },
       videoId,

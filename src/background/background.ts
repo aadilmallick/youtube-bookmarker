@@ -1,29 +1,12 @@
 import {
   MessageTypes,
   SendingMessage,
-  addMessageListener,
+  addMessageListenerAsync,
   sendMessageToContentScript,
 } from "../utils/messages";
-import {
-  SyncStorageKeys,
-  defaultSyncOptions,
-  getSync,
-  storeSync,
-} from "../utils/storage";
 
-// whenever refresh, this will run, and these things will happen:
-// Fired when the extension is first installed, when the extension is updated
-// to a new version, and when Chrome is updated to a new version.
-// 1. reset storage to default values
-// 2. reset badge text to empty string
 chrome.runtime.onInstalled.addListener(async () => {
   // TODO: do not reset storage when installed. only set default when empty
-  // const stored = await getSync(
-  //   Object.keys(defaultSyncOptions) as SyncStorageKeys
-  // );
-  // if (!stored) {
-  // }
-  // await storeSync(defaultSyncOptions);
 });
 
 chrome.storage.sync.getBytesInUse(null, function (bytesUsed) {
@@ -31,15 +14,14 @@ chrome.storage.sync.getBytesInUse(null, function (bytesUsed) {
   var kilobytesUsed = bytesUsed / 1024;
 
   // Log the usage
-  console.log("Sync storage usage: " + kilobytesUsed + " KB");
+  // console.log("Sync storage usage: " + kilobytesUsed + " KB");
 });
 
 // callback function is async, and you can choose whether to send response.
 // if you don't send response, the callback function in the receiving side won't execute.
-addMessageListener(
+addMessageListenerAsync(
   MessageTypes.ASK_VIDEO_ID,
   async (message, sender, sendResponse) => {
-    // console.log("message", message);
     const videoId = await getTheVideoId();
     sendResponse({ videoId });
   }
@@ -47,36 +29,32 @@ addMessageListener(
 
 export async function getTheVideoId() {
   const tabs = await chrome.tabs.query({ active: true, currentWindow: true });
-  // tab.url will only be populated if command is triggered form one of the allowed host permission urls
   const currentTab = tabs[0];
 
+  // tab.url will only be populated if command is triggered form one of the allowed host permission urls
   // if not on host permission site, exit.
   if (!currentTab?.url) {
     return;
   }
 
-  // console.log(currentTab);
   const queryParams = currentTab.url.split("?")[1];
   if (!queryParams) return;
   const urlParams = new URLSearchParams(queryParams);
-  // console.log("urlprmas", Object(urlParams));
   const videoId = urlParams.get("v");
-  console.log("videoId", videoId);
   return videoId;
 }
 
-chrome.commands.onCommand.addListener(async (command) => {
-  console.log(`Command: ${command}`);
+chrome.commands.onCommand.addListener(async (command, tab) => {
+  if (!tab.url) return;
   if (command === "save_bookmark") {
     const videoId = await getTheVideoId();
-    if (!videoId) return;
+    if (!videoId) {
+      return;
+    }
     const response = await sendMessageToContentScript(
       MessageTypes.ADD_BOOKMARK,
       { videoId }
     );
-    console.group(`${MessageTypes.ADD_BOOKMARK} [background] response`);
-    console.log(response);
-    console.groupEnd();
   }
 });
 
@@ -90,11 +68,11 @@ chrome.tabs.onActivated.addListener(async (tab) => {
     files: ["contentScript.js"],
     target: { tabId: tab.tabId },
   });
-  console.log("script injectied from onActivated listener");
 });
 
 chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
   if (tab.status !== "complete") return;
+
   const videoId = await getTheVideoId();
   if (!videoId) return;
 
@@ -102,5 +80,4 @@ chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
     files: ["contentScript.js"],
     target: { tabId: tabId },
   });
-  console.log("script injectied from onUpdated listener");
 });

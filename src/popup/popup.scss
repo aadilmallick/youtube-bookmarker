@@ -146,12 +146,30 @@ a {
   z-index: 9;
 }
 
+.utilities {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem;
+}
+
 .json-icon {
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
-  padding: 0.5rem;
+
+  transition: $transition;
+  cursor: pointer;
+  &:hover {
+    background-color: whitesmoke;
+  }
+}
+
+.table-link-container {
+  display: flex;
+  gap: 0.5rem;
+  align-items: center;
   transition: $transition;
   cursor: pointer;
   &:hover {

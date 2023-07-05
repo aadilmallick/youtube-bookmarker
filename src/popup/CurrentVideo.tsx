@@ -114,7 +114,6 @@ const TimestampRow = ({
   onEditDescription,
 }: TimestampRowProps) => {
   const onSeek = async () => {
-    console.log("seeking to", timestamp);
     const seconds = convertTimestampToSeconds(timestamp.timestamp);
     const response = await sendMessageToContentScript(
       MessageTypes.SEEK_TO_TIME,
@@ -188,7 +187,6 @@ const EditModal = ({
         onClick={(e) => {
           // figure out what the fuck this does
           e.stopPropagation();
-          console.log("clicked overlay");
           hideModal();
         }}
       ></div>

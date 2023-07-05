@@ -38,7 +38,6 @@ export const sendMessageToContentScript = async (
   });
 };
 
-// * works ✅
 export const sendMessageFromContentScript = async (
   message: Message,
   payload?: SendingMessage["payload"]
@@ -52,20 +51,25 @@ export const sendMessageFromContentScript = async (
  *                                           *
  **********************************************/
 
-type ReceivingMessageFunc = (
+type ReceivingMessageFuncAsync = (
   message?: SendingMessage,
   sender?: chrome.runtime.MessageSender,
   sendResponse?: (response?: any) => void
 ) => Promise<void>;
 
+type ReceivingMessageFuncSync = (
+  message?: SendingMessage,
+  sender?: chrome.runtime.MessageSender,
+  sendResponse?: (response?: any) => void
+) => void;
 // * works ✅
 /**
  *
  * @desc to avoid error, you must send a response in the callback function.
  */
-export const addMessageListener = (
+export const addMessageListenerAsync = (
   receivingMessage: Message,
-  func: ReceivingMessageFunc
+  func: ReceivingMessageFuncAsync
 ) => {
   const messageCallback = (
     message: SendingMessage,
@@ -83,7 +87,32 @@ export const addMessageListener = (
   return messageCallback;
 };
 
-export const removeMessageListener = (callback: ReceivingMessageFunc) => {
-  console.log("removing message listener");
+export const addMessageListenerSync = (
+  receivingMessage: Message,
+  func: ReceivingMessageFuncSync
+) => {
+  const messageCallback = (
+    message: SendingMessage,
+    sender: chrome.runtime.MessageSender,
+    sendResponse: (response?: any) => void
+  ) => {
+    if (message.type === receivingMessage) {
+      func(message, sender, sendResponse);
+    }
+  };
+  chrome.runtime.onMessage.addListener(messageCallback);
+
+  return messageCallback;
+};
+
+export const removeMessageListenerAsync = (
+  callback: ReceivingMessageFuncAsync
+) => {
+  chrome.runtime.onMessage.removeListener(callback);
+};
+
+export const removeMessageListenerSync = (
+  callback: ReceivingMessageFuncSync
+) => {
   chrome.runtime.onMessage.removeListener(callback);
 };

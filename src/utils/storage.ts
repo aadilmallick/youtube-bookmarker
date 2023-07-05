@@ -84,8 +84,6 @@ export async function deleteTimestampSync(
 
 export async function deleteVideoSync(videoId: Video["id"]) {
   const videos = await getSyncBookmarks();
-  // const vidIndex = videos.findIndex((video) => video.id === videoId);
-  // const newVideos = videos.splice(vidIndex, 1);
   await storeSync({ videos: videos.filter((video) => video.id !== videoId) });
 }
 
@@ -129,7 +127,6 @@ export async function addTimestampSync(
   if (video) {
     // TODO: check if timestamp already exists, by creating helper function
     if (!isTimestampUnique(timestamp, video)) {
-      console.log("timestamp already exists");
       return;
     }
     video.timestamps.push(timestamp);

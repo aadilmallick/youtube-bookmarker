@@ -7,8 +7,6 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 const App: React.FC<{}> = () => {
-  // TODO: 1. create two tabs: current video, and saved videos
-  // TODO 2. Load all saved videos
   const [tab, setTab] = React.useState<"currentVideo" | "savedVideos">(
     "currentVideo"
   );

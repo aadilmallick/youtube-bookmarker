@@ -6,7 +6,7 @@ import {
   getVideoSync,
 } from "../utils/storage";
 import { getTheVideoId } from "../background/background";
-import { FaCopy } from "react-icons/fa";
+import { FaCopy, FaExternalLinkAlt } from "react-icons/fa";
 import { toast } from "react-toastify";
 
 export const SavedVideos = () => {
@@ -16,7 +16,6 @@ export const SavedVideos = () => {
     async function getStorage() {
       setLoading(true);
       const videos = await getSyncBookmarks();
-      console.table(videos);
       setVideos(videos);
       setLoading(false);
     }
@@ -35,19 +34,27 @@ export const SavedVideos = () => {
 
   return (
     <div>
-      <div
-        className="json-icon"
-        onClick={() => {
-          setLoading(true);
-          navigator.clipboard.writeText(JSON.stringify(videos));
-          toast("Copied to clipboard", {
-            autoClose: 1000,
-          });
-          setLoading(false);
-        }}
-      >
-        <FaCopy color="gray" />
-        <p>Export JSON</p>
+      <div className="utilities">
+        <div
+          className="json-icon"
+          onClick={() => {
+            setLoading(true);
+            navigator.clipboard.writeText(JSON.stringify(videos));
+            toast("Copied to clipboard", {
+              autoClose: 1000,
+            });
+            setLoading(false);
+          }}
+        >
+          <FaCopy color="gray" />
+          <p>Export JSON</p>
+        </div>
+        <div className="table-link-container">
+          <a href="https://ytbookmarkertable.netlify.app/" target="_blank">
+            Bookmarks Table
+          </a>
+          <FaExternalLinkAlt color="gray" />
+        </div>
       </div>
       {videos.map((video) => (
         <VideoRow video={video} key={video.id} onDelete={onDelete} />
