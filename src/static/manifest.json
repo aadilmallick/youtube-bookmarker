@@ -1,7 +1,7 @@
 {
   "name": "Youtube Bookmarker",
   "description": "A bookmark extension for your videos",
-  "version": "1.0.0",
+  "version": "1.0.2",
   "manifest_version": 3,
   "icons": {
     "16": "icon.png",
@@ -24,15 +24,5 @@
       "matches": ["https://*.youtube.com/watch*"],
       "js": ["contentScript.js"]
     }
-  ],
-  "commands": {
-    "save_bookmark": {
-      "suggested_key": {
-        "default": "Ctrl+B",
-        "linux": "Ctrl+B",
-        "mac": "Command+B"
-      },
-      "description": "Send a 'toggle-feature' event"
-    }
-  }
+  ]
 }

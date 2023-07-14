@@ -126,10 +126,17 @@ const TimestampRow = ({
     <div
       className="timestamp-row"
       onClick={(e) => {
+        // e.stopPropagation();
         setShowEditModal(true);
       }}
     >
-      <a href="#" onClick={onSeek}>
+      <a
+        href="#"
+        onClick={(e) => {
+          e.stopPropagation();
+          onSeek();
+        }}
+      >
         {timestamp.timestamp}
       </a>
       <div className="right-side">

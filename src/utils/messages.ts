@@ -8,6 +8,7 @@ export enum MessageTypes {
   ADD_BOOKMARK = "ADD_BOOKMARK",
   ASK_VIDEO_ID = "ASK_VIDEO_ID",
   SEEK_TO_TIME = "SEEK_TO_TIME",
+  SIMULATE_DEFAULT_SHORTCUT = "SIMULATE_DEFAULT_SHORTCUT",
 }
 
 export type SendingMessage = {

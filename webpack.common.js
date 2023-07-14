@@ -32,7 +32,7 @@ module.exports = {
   },
   plugins: [
     new CleanWebpackPlugin({
-      cleanStaleWebpackAssets: true,
+      cleanStaleWebpackAssets: false,
     }),
     new CopyPlugin({
       patterns: [

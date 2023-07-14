@@ -344,6 +344,28 @@ chrome.commands.onCommand.addListener(async (command) => {
 });
 ```
 
+### Gotcha
+
+Be aware that registering a chrome command actually makes it global across chrome, and any shortcut you register inside your extension actually gets registered at this site: [chrome shortcuts](chrome://extensions/shortcuts). Your command will override any other use for that command, no matter what. This means that if you register a shortcut that is already registered by another extension, your extension will override the other extension's shortcut and any default behavior provided by that default shortcut.
+
+In my project, I used `ctrl + b` to bookmark, but it overrides the default behavior of bolding on other sites. The solution to this problem is to listen for the DOM event on the content script, if you don't want your keyboard shortcuts to be global across every website.
+
+```javascript
+document.addEventListener(
+  "keydown",
+  function (event) {
+    if (event.ctrlKey && String.fromCharCode(event.keyCode) === "B") {
+      event.preventDefault();
+      event.stopPropagation();
+      // * add bookmark here
+    }
+  },
+  true
+);
+```
+
+On the content script, it will listen for the `Ctrl+B` shortcut, instead of listening across every url and overriding the default behavior.
+
 ## Automatically injecting content scripts
 
 ### Getting the youtube video Id

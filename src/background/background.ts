@@ -33,6 +33,7 @@ export async function getTheVideoId() {
 
   // tab.url will only be populated if command is triggered form one of the allowed host permission urls
   // if not on host permission site, exit.
+  // I have set host permissions to only youtube, so this code will exit on every site except youtube
   if (!currentTab?.url) {
     return;
   }
@@ -43,20 +44,6 @@ export async function getTheVideoId() {
   const videoId = urlParams.get("v");
   return videoId;
 }
-
-chrome.commands.onCommand.addListener(async (command, tab) => {
-  if (!tab.url) return;
-  if (command === "save_bookmark") {
-    const videoId = await getTheVideoId();
-    if (!videoId) {
-      return;
-    }
-    const response = await sendMessageToContentScript(
-      MessageTypes.ADD_BOOKMARK,
-      { videoId }
-    );
-  }
-});
 
 // TODO: automatically inject content script
 
