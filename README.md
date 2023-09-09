@@ -1,3 +1,14 @@
+# Introduction 
+
+This chrome extension is exactly what it sounds like: a Youtube bookmarker. On any youtube video, all you have to do is press **ctrl + b** to save a note for that current timestamp on the video. You can then click on the extension popup and customize the notes. Easy and frictionless note-taking, reminders, or whatever you need it for. 
+
+Download it at https://chrome.google.com/webstore/detail/youtube-bookmarker/afkamhoafddblohdfjldodabchpgfofg
+
+*** 
+
+If you care about what I used to make this, I used ManifestV3 with typescript, react, and webpack. 
+
+
 # My bookmarks
 
 My bookmarks are saved [here](https://codebeautify.org/jsonviewer/y23907db3)
