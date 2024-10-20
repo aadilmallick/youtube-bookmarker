@@ -13,3 +13,38 @@
     }
   }
 }
+
+.bookmark-timestamp {
+  position: absolute;
+  z-index: 100;
+  /* transform: translate(-50%, -50%); */
+  transform: translateY(-75%);
+  width: 4px;
+  height: 12px;
+  border-radius: 2px;
+  background-color: rgb(54, 215, 215);
+  transform-origin: center center;
+  transition: transform 0.2s ease;
+  &:hover {
+    transform: translateY(-75%) scale(1.2);
+  }
+}
+
+.bookmark-description {
+  position: absolute;
+  display: none;
+  top: 0;
+  left: 0;
+  background-color: white;
+  opacity: 0.75;
+  color: rgb(56, 56, 56);
+  font-size: 12px;
+  padding: 0.5rem;
+  border-bottom-right-radius: 0.5rem;
+  box-shadow: 0 4px 0.25rem rgba(0, 0, 0, 0.1);
+  z-index: 100;
+  pointer-events: none;
+  &.show {
+    display: block;
+  }
+}

@@ -9,12 +9,12 @@ chrome.runtime.onInstalled.addListener(async () => {
   // TODO: do not reset storage when installed. only set default when empty
 });
 
-chrome.storage.sync.getBytesInUse(null, function (bytesUsed) {
+chrome.storage.local.getBytesInUse(null, function (bytesUsed) {
   // Calculate the usage in kilobytes
   var kilobytesUsed = bytesUsed / 1024;
 
   // Log the usage
-  // console.log("Sync storage usage: " + kilobytesUsed + " KB");
+  // console.log("Local storage usage: " + kilobytesUsed + " KB");
 });
 
 // callback function is async, and you can choose whether to send response.

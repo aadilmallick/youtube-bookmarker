@@ -38,7 +38,7 @@ export const defaultSyncOptions: Required<SyncStorage> = {
 
 export function storeSync(obj: SyncStorage): Promise<void> {
   return new Promise((resolve) => {
-    chrome.storage.sync.set(obj, () => {
+    chrome.storage.local.set(obj, () => {
       if (chrome.runtime.lastError) {
         console.error(chrome.runtime.lastError);
         throw new Error(chrome.runtime.lastError.message);
@@ -151,7 +151,7 @@ export async function getSyncBookmarks(): Promise<Video[]> {
 export async function getVideoSync(id: Video["id"]): Promise<Video | null> {
   const keys: SyncStorageKeys = ["videos"];
   const { videos } = await getSync(keys);
-  return videos.filter((video) => video.id === id)[0] || null;
+  return videos?.filter((video) => video.id === id)[0] || null;
 }
 
 function getLocal(keys: LocalStorageKeys): Promise<LocalStorage> {
@@ -168,12 +168,12 @@ function getLocal(keys: LocalStorageKeys): Promise<LocalStorage> {
 
 export function getSync(keys: SyncStorageKeys): Promise<SyncStorage> {
   return new Promise((resolve) => {
-    chrome.storage.sync.get(keys, (result: SyncStorage) => {
+    chrome.storage.local.get(keys, (result: SyncStorage) => {
       if (chrome.runtime.lastError) {
         console.error(chrome.runtime.lastError);
         throw new Error(chrome.runtime.lastError.message);
       }
-      resolve(result);
+      resolve(result || defaultSyncOptions);
     });
   });
 }

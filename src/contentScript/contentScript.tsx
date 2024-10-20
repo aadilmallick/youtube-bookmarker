@@ -10,12 +10,13 @@ import {
   removeMessageListenerAsync,
   sendMessageFromContentScript,
 } from "../utils/messages";
-import { convertSecondsToTimestamp } from "./lib";
+import { convertSecondsToTimestamp, convertTimestampToSeconds } from "./lib";
 import {
   Video,
   addTimestampSync,
   getSync,
   getSyncBookmarks,
+  getVideoSync,
 } from "../utils/storage";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -95,13 +96,17 @@ const BookmarkButton = () => {
       return;
     }
 
+    let videoIdUrl = new URL(window.location.href).searchParams.get("v");
+
+    // maybe check if we have the correct video id, queu bug
+
     await addTimestampSync(
       {
-        description: "hi",
+        description: "",
         // simple utility function. This works. Ignore it
         timestamp: convertSecondsToTimestamp(ytPlayer.currentTime),
       },
-      videoId,
+      videoIdUrl,
       videoTitle
     );
     toast("bookmark added", {
@@ -149,6 +154,85 @@ modalContainer.style.fontSize = "16px";
 
 const videoContainer = document.querySelector(".html5-video-container");
 const root2 = createRoot(modalContainer);
+
+const timeline = document.querySelector(".ytp-progress-bar-container");
+// if (progressBar) {
+//   alert("progress bar found");
+// }
+
+async function loadTimestamps() {
+  if (document.readyState !== "complete") return;
+  const progressBar = timeline.querySelector(
+    ".ytp-progress-bar[role='slider']"
+  );
+  if (!progressBar) return;
+
+  const videoDurationInSeconds = ytPlayer.duration;
+
+  const videoId = new URL(window.location.href).searchParams.get("v");
+  const video = await getVideoSync(videoId);
+
+  const bookmarks: {
+    timestamp: string;
+    description: string;
+    element: HTMLDivElement;
+  }[] = [];
+
+  // makes bookmarks appear on video
+  // * store bookmark text on bookmark.title
+  // * store timestamp on bookmark.data-timestamp
+  video.timestamps.forEach((timestamp) => {
+    const bookmark = document.createElement("div");
+    bookmark.classList.add("bookmark-timestamp");
+    bookmark.style.left = `${
+      (convertTimestampToSeconds(timestamp.timestamp) /
+        videoDurationInSeconds) *
+      100
+    }%`;
+    // add description to bookmark
+    bookmark.title = timestamp.description;
+    // add timestamp to bookmark
+    bookmark.setAttribute("data-timestamp", timestamp.timestamp);
+    progressBar.appendChild(bookmark);
+
+    bookmarks.push({
+      timestamp: timestamp.timestamp,
+      description: timestamp.description,
+      element: bookmark,
+    });
+  });
+
+  // load invisible bookmark description block
+  const bookmarkDescription = document.createElement("div");
+  bookmarkDescription.classList.add("bookmark-description");
+  videoContainer.appendChild(bookmarkDescription);
+
+  progressBar.addEventListener("mouseleave", () => {
+    bookmarkDescription.classList.remove("show");
+  });
+
+  // const bookmarks = [...progressBar.querySelectorAll(".bookmark-timestamp")] as HTMLDivElement[];
+  progressBar.addEventListener("mousemove", (event) => {
+    const bookmarkTarget = event.target as HTMLDivElement;
+
+    // if hovering over a bookmark, show description
+    if (bookmarkTarget.getAttribute("data-timestamp")) {
+      bookmarkDescription.classList.add("show");
+      bookmarkDescription.textContent =
+        bookmarkTarget.getAttribute("data-timestamp") +
+        " " +
+        bookmarkTarget.title;
+    }
+  });
+  // bookmarks.forEach((bookmark) => {
+  //   bookmark.element.addEventListener("mouseover", async () => {
+  //     bookmarkDescription.classList.add("show");
+  //   });
+  // })
+}
+
+loadTimestamps();
+
 if (!videoContainer?.querySelector("#my-modal-container")) {
   videoContainer?.prepend(modalContainer);
   root2.render(<Modal />);

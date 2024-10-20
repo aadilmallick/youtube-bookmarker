@@ -19,9 +19,8 @@ export const CurrentVideo = () => {
     await deleteTimestampSync(timestamp, videoId);
     setVideo((prevVideo) => ({
       ...prevVideo,
-      timestamps: prevVideo?.timestamps.filter(
-        (ts) => ts.timestamp !== timestamp
-      ),
+      timestamps:
+        prevVideo?.timestamps?.filter((ts) => ts.timestamp !== timestamp) || [],
     }));
   };
 
@@ -130,23 +129,42 @@ const TimestampRow = ({
         setShowEditModal(true);
       }}
     >
-      <a
-        href="#"
-        onClick={(e) => {
-          e.stopPropagation();
-          onSeek();
-        }}
-      >
-        {timestamp.timestamp}
-      </a>
-      <div className="right-side">
-        <p className="short-description">{description.slice(0, 20) + "..."}</p>
+      <div className="timestamp-container">
+        <p className="short-description">
+          {" "}
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              onSeek();
+            }}
+            className="timestamp-btn"
+            title={`seek to timestamp ${timestamp.timestamp}`}
+            style={{
+              cursor: "pointer",
+            }}
+          >
+            {timestamp.timestamp}
+          </button>
+          {description ? (
+            description.slice(0, 500) + (description.length > 500 ? "..." : "")
+          ) : (
+            <span
+              style={{
+                color: "gray",
+              }}
+            >
+              new timestamp
+            </span>
+          )}
+        </p>
         <button
           onClick={(e) => {
             // need e.stopPropagation() so that the click doesn't go to the parent
             e.stopPropagation();
             onDelete(timestamp.timestamp, videoId);
           }}
+          className="delete-timestamp"
+          title="Delete timestamp"
         >
           X
         </button>

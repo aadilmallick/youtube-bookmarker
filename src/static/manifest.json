@@ -1,7 +1,7 @@
 {
   "name": "Youtube Bookmarker",
   "description": "A bookmark extension for your videos",
-  "version": "1.0.2",
+  "version": "1.0.6",
   "manifest_version": 3,
   "icons": {
     "16": "icon.png",
@@ -13,7 +13,7 @@
     "default_title": "Youtube Bookmarker. Ctrl + B to bookmark",
     "default_icon": "icon.png"
   },
-  "permissions": ["storage", "scripting"],
+  "permissions": ["storage", "scripting", "unlimitedStorage"],
   "host_permissions": ["https://*.youtube.com/watch*"],
   "options_page": "options.html",
   "background": {
