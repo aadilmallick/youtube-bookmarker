@@ -24,6 +24,85 @@ import "react-toastify/dist/ReactToastify.css";
 // ! Huge discovery: chrome.commands overrides the keyboard shortcuts for all urls, no matter what.
 // ! : to only allow a keyboard shrotcut on a specific site, listen for it from your content script.
 
+function onVideoIdChange(callback: (videoId: string) => void) {
+  let currentVideoId = new URL(window.location.href).searchParams.get("v");
+
+  const observer = new MutationObserver(() => {
+    const newVideoId = new URL(window.location.href).searchParams.get("v");
+    if (newVideoId !== currentVideoId) {
+      currentVideoId = newVideoId;
+      callback(newVideoId);
+    }
+  });
+
+  observer.observe(document, { subtree: true, childList: true });
+
+  return () => observer.disconnect();
+}
+
+function debounce<T extends (...args: any[]) => void>(
+  func: T,
+  wait: number = 500
+): (...args: Parameters<T>) => void {
+  let timeout: NodeJS.Timeout;
+  return function executedFunction(...args: Parameters<T>) {
+    const later = () => {
+      clearTimeout(timeout);
+      func(...args);
+    };
+    clearTimeout(timeout);
+    timeout = setTimeout(later, wait);
+  };
+}
+
+function throttle<T extends (...args: any[]) => void>(
+  func: T,
+  limit: number = 500
+): (...args: Parameters<T>) => void {
+  let lastFunc: NodeJS.Timeout;
+  let lastRan: number;
+  return function throttledFunction(...args: Parameters<T>) {
+    if (!lastRan) {
+      func(...args);
+      lastRan = Date.now();
+    } else {
+      clearTimeout(lastFunc);
+      lastFunc = setTimeout(() => {
+        if (Date.now() - lastRan >= limit) {
+          func(...args);
+          lastRan = Date.now();
+        }
+      }, limit - (Date.now() - lastRan));
+    }
+  };
+}
+
+onVideoIdChange(
+  debounce((newVideoId) => {
+    console.log("Video ID changed to:", newVideoId);
+    // Perform any additional actions when the video ID changes
+    if (newVideoId) {
+      clearTimestamps();
+      loadTimestamps();
+    }
+  })
+);
+
+function onNetworkIdle(callback: () => void) {
+  let timer: NodeJS.Timeout;
+
+  const observer = new PerformanceObserver((list) => {
+    clearTimeout(timer);
+    timer = setTimeout(() => {
+      callback();
+    }, 500); // Adjust the timeout as needed
+  });
+
+  observer.observe({ entryTypes: ["resource"] });
+
+  return () => observer.disconnect();
+}
+
 // youtube video player
 const ytPlayer = document.querySelector(".video-stream") as HTMLVideoElement;
 
@@ -109,6 +188,8 @@ const BookmarkButton = () => {
       videoIdUrl,
       videoTitle
     );
+    clearTimestamps();
+    loadTimestamps();
     toast("bookmark added", {
       position: "top-right",
       autoClose: 2000,
@@ -160,6 +241,12 @@ const timeline = document.querySelector(".ytp-progress-bar-container");
 //   alert("progress bar found");
 // }
 
+function clearTimestamps() {
+  document
+    .querySelectorAll(".bookmark-timestamp")
+    .forEach((bookmark) => bookmark.remove());
+}
+
 async function loadTimestamps() {
   if (document.readyState !== "complete") return;
   const progressBar = timeline.querySelector(
@@ -171,6 +258,7 @@ async function loadTimestamps() {
 
   const videoId = new URL(window.location.href).searchParams.get("v");
   const video = await getVideoSync(videoId);
+  if (!video) return;
 
   const bookmarks: {
     timestamp: string;
@@ -224,11 +312,6 @@ async function loadTimestamps() {
         bookmarkTarget.title;
     }
   });
-  // bookmarks.forEach((bookmark) => {
-  //   bookmark.element.addEventListener("mouseover", async () => {
-  //     bookmarkDescription.classList.add("show");
-  //   });
-  // })
 }
 
 loadTimestamps();

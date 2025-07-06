@@ -33,13 +33,13 @@ export const SavedVideos = () => {
   if (loading) return <p>Loading...</p>;
 
   return (
-    <div>
+    <div style={{ height: "100%", display: "flex", flexDirection: "column" }}>
       <div className="utilities">
         <div
           className="json-icon"
           onClick={() => {
             setLoading(true);
-            navigator.clipboard.writeText(JSON.stringify(videos));
+            navigator.clipboard.writeText(JSON.stringify(videos, null, 2));
             toast("Copied to clipboard", {
               autoClose: 1000,
             });
@@ -55,10 +55,31 @@ export const SavedVideos = () => {
           </a>
           <FaExternalLinkAlt color="gray" />
         </div>
+        <div
+          className="sync-btn"
+          onClick={() => chrome.runtime.openOptionsPage()}
+        >
+          <p>Sync to GitHub</p>
+        </div>
+        <div
+          className="sync-btn"
+          onClick={() => chrome.runtime.openOptionsPage()}
+        >
+          <p>Import JSON</p>
+        </div>
       </div>
-      {videos.map((video) => (
-        <VideoRow video={video} key={video.id} onDelete={onDelete} />
-      ))}
+      <ul
+        style={{
+          overflowY: "auto",
+          flex: 1,
+          paddingBottom: "1rem",
+          maxHeight: "300px",
+        }}
+      >
+        {videos.map((video) => (
+          <VideoRow video={video} key={video.id} onDelete={onDelete} />
+        ))}
+      </ul>
     </div>
   );
 };
@@ -71,7 +92,7 @@ const VideoRow = ({
   onDelete: (videoId: string) => void;
 }) => {
   return (
-    <div className="video-row">
+    <li className="video-row">
       <p>
         <a href={`https://www.youtube.com/watch?v=${video.id}`} target="_blank">
           {video.title}
@@ -80,6 +101,6 @@ const VideoRow = ({
       <button className="delete-btn" onClick={() => onDelete(video.id)}>
         X
       </button>
-    </div>
+    </li>
   );
 };

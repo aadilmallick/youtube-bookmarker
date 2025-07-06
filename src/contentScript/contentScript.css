@@ -26,7 +26,7 @@
   transform-origin: center center;
   transition: transform 0.2s ease;
   &:hover {
-    transform: translateY(-75%) scale(1.2);
+    transform: translateY(-75%) scale(1.5);
   }
 }
 

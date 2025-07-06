@@ -1,7 +1,7 @@
 {
   "name": "Youtube Bookmarker",
   "description": "A bookmark extension for your videos",
-  "version": "1.0.6",
+  "version": "1.0.8",
   "manifest_version": 3,
   "icons": {
     "16": "icon.png",

@@ -26,7 +26,10 @@ export type SyncStorageKeys = (keyof SyncStorage)[];
 export type LocalStorageKeys = (keyof LocalStorage)[];
 
 export const defaultSyncOptions: Required<SyncStorage> = {
-  options: {},
+  options: {
+    gistId: "",
+    gistToken: "",
+  },
   videos: [],
 };
 
