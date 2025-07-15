@@ -132,6 +132,23 @@ const App: React.FC<{}> = () => {
           gist
         </li>
       </ol>
+      <p style={{ marginBottom: 16 }}>
+        The buttons above serve the following purposes:
+        <br />
+        <br />
+        <strong>Save Options</strong> - Saves your Gist ID and GitHub token to
+        be used for syncing
+        <br />
+        <br />
+        <strong>Upload Sync</strong> - Pushes your current local bookmarks to
+        the remote gist, overwriting whatever is stored there. Use this when you
+        want to update the remote copy with your local changes.
+        <br />
+        <br />
+        <strong>Download Sync</strong> - Pulls the bookmarks stored in the
+        remote gist and overwrites your local storage with them. Use this when
+        you want to get the latest changes from another device.
+      </p>
       <div style={{ marginBottom: 16 }}>
         <label htmlFor="gistId">Gist ID:</label>
         <input
