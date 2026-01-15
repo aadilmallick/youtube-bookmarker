@@ -300,18 +300,31 @@ async function loadTimestamps() {
   });
 
   // const bookmarks = [...progressBar.querySelectorAll(".bookmark-timestamp")] as HTMLDivElement[];
-  progressBar.addEventListener("mousemove", (event) => {
+  // Use throttled mousemove to reduce frequency of updates
+  const handleMouseMove = throttle((event: MouseEvent) => {
     const bookmarkTarget = event.target as HTMLDivElement;
 
     // if hovering over a bookmark, show description
     if (bookmarkTarget.getAttribute("data-timestamp")) {
-      bookmarkDescription.classList.add("show");
-      bookmarkDescription.textContent =
-        bookmarkTarget.getAttribute("data-timestamp") +
-        " " +
-        bookmarkTarget.title;
+      // Use requestIdleCallback to defer DOM updates and avoid blocking
+      const updateDescription = () => {
+        bookmarkDescription.classList.add("show");
+        bookmarkDescription.textContent =
+          bookmarkTarget.getAttribute("data-timestamp") +
+          " " +
+          bookmarkTarget.title;
+      };
+      
+      // Use requestIdleCallback if available, otherwise use setTimeout
+      if ('requestIdleCallback' in window) {
+        requestIdleCallback(updateDescription, { timeout: 50 });
+      } else {
+        setTimeout(updateDescription, 0);
+      }
     }
-  });
+  }, 16); // ~60fps throttle
+  
+  progressBar.addEventListener("mousemove", handleMouseMove);
 }
 
 loadTimestamps();
