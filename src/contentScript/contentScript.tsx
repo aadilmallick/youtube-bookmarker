@@ -299,6 +299,15 @@ async function loadTimestamps() {
     bookmarkDescription.classList.remove("show");
   });
 
+  // Helper to schedule DOM updates during idle time
+  const scheduleUpdate = (callback: () => void) => {
+    if ('requestIdleCallback' in window) {
+      requestIdleCallback(callback, { timeout: 16 });
+    } else {
+      setTimeout(callback, 16);
+    }
+  };
+
   // const bookmarks = [...progressBar.querySelectorAll(".bookmark-timestamp")] as HTMLDivElement[];
   // Use throttled mousemove to reduce frequency of updates
   const handleMouseMove = throttle((event: MouseEvent) => {
@@ -312,28 +321,15 @@ async function loadTimestamps() {
       const text = timestamp + " " + title;
       
       // Use requestIdleCallback to defer DOM updates and avoid blocking
-      const updateDescription = () => {
+      scheduleUpdate(() => {
         bookmarkDescription.classList.add("show");
         bookmarkDescription.textContent = text;
-      };
-      
-      // Use requestIdleCallback if available, otherwise use setTimeout
-      if ('requestIdleCallback' in window) {
-        requestIdleCallback(updateDescription, { timeout: 16 });
-      } else {
-        setTimeout(updateDescription, 0);
-      }
+      });
     } else {
       // Hide description when not hovering over a bookmark (also deferred)
-      const hideDescription = () => {
+      scheduleUpdate(() => {
         bookmarkDescription.classList.remove("show");
-      };
-      
-      if ('requestIdleCallback' in window) {
-        requestIdleCallback(hideDescription, { timeout: 16 });
-      } else {
-        setTimeout(hideDescription, 0);
-      }
+      });
     }
   }, 16); // ~60fps throttle
   
