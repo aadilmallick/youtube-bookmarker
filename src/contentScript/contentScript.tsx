@@ -323,6 +323,9 @@ async function loadTimestamps() {
       } else {
         setTimeout(updateDescription, 0);
       }
+    } else {
+      // Hide description when not hovering over a bookmark
+      bookmarkDescription.classList.remove("show");
     }
   }, 16); // ~60fps throttle
   
