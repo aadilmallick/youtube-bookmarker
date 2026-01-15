@@ -324,8 +324,16 @@ async function loadTimestamps() {
         setTimeout(updateDescription, 0);
       }
     } else {
-      // Hide description when not hovering over a bookmark
-      bookmarkDescription.classList.remove("show");
+      // Hide description when not hovering over a bookmark (also deferred)
+      const hideDescription = () => {
+        bookmarkDescription.classList.remove("show");
+      };
+      
+      if ('requestIdleCallback' in window) {
+        requestIdleCallback(hideDescription, { timeout: 16 });
+      } else {
+        setTimeout(hideDescription, 0);
+      }
     }
   }, 16); // ~60fps throttle
   
