@@ -305,19 +305,21 @@ async function loadTimestamps() {
     const bookmarkTarget = event.target as HTMLDivElement;
 
     // if hovering over a bookmark, show description
-    if (bookmarkTarget.getAttribute("data-timestamp")) {
+    const timestamp = bookmarkTarget.getAttribute("data-timestamp");
+    if (timestamp) {
+      // Capture values to avoid stale closure references
+      const title = bookmarkTarget.title;
+      const text = timestamp + " " + title;
+      
       // Use requestIdleCallback to defer DOM updates and avoid blocking
       const updateDescription = () => {
         bookmarkDescription.classList.add("show");
-        bookmarkDescription.textContent =
-          bookmarkTarget.getAttribute("data-timestamp") +
-          " " +
-          bookmarkTarget.title;
+        bookmarkDescription.textContent = text;
       };
       
       // Use requestIdleCallback if available, otherwise use setTimeout
       if ('requestIdleCallback' in window) {
-        requestIdleCallback(updateDescription, { timeout: 50 });
+        requestIdleCallback(updateDescription, { timeout: 16 });
       } else {
         setTimeout(updateDescription, 0);
       }
