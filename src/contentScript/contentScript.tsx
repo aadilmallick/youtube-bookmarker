@@ -331,7 +331,7 @@ async function loadTimestamps() {
         bookmarkDescription.classList.remove("show");
       });
     }
-  }, 16); // ~60fps throttle
+  }, 100); // 100ms throttle to reduce jitter
   
   progressBar.addEventListener("mousemove", handleMouseMove);
 }
