@@ -13,7 +13,10 @@
     "default_title": "Youtube Bookmarker. Ctrl + B to bookmark",
     "default_icon": "icon.png"
   },
-  "permissions": ["storage", "scripting", "unlimitedStorage"],
+  "permissions": ["storage", "scripting", "unlimitedStorage", "sidePanel"],
+  "side_panel": {
+    "default_path": "sidepanel.html"
+  },
   "host_permissions": ["https://*.youtube.com/watch*"],
   "options_page": "options.html",
   "background": {

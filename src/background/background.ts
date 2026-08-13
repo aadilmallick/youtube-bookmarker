@@ -7,6 +7,10 @@ import {
 
 chrome.runtime.onInstalled.addListener(async () => {
   // TODO: do not reset storage when installed. only set default when empty
+  // Configure side panel behavior
+  if (chrome.sidePanel && chrome.sidePanel.setPanelBehavior) {
+    chrome.sidePanel.setPanelBehavior({ openPanelOnActionClick: true });
+  }
 });
 
 chrome.storage.local.getBytesInUse(null, function (bytesUsed) {

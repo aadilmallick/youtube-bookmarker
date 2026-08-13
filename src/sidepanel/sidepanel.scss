@@ -1,0 +1,424 @@
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+$primary: rgb(141, 85, 193);
+$secondary: hsl(318, 76%, 60%);
+$bg-dark: #1c1c1c;
+$bg-card: #2d2d2d;
+$text-light: #ece9e9;
+$text-muted: #a0a0a0;
+$transition: color 0.3s, opacity 0.3s, transform 0.3s, background-color 0.3s;
+
+body {
+  width: 100%;
+  height: 100vh;
+  background-color: $bg-dark;
+  color: $text-light;
+  font-size: 14px;
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+    Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+  overflow-x: hidden;
+}
+
+a {
+  text-decoration: none;
+  color: $primary;
+  transition: $transition;
+  &:hover {
+    color: $secondary;
+  }
+}
+
+.sidepanel-container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  padding: 1rem;
+  overflow-y: auto;
+}
+
+.header {
+  margin-bottom: 1rem;
+  h2 {
+    font-size: 1.25rem;
+    color: white;
+    margin-bottom: 0.5rem;
+    text-align: center;
+  }
+}
+
+.search-bar {
+  width: 100%;
+  padding: 0.5rem;
+  border-radius: 4px;
+  border: 1px solid #444;
+  background-color: #333;
+  color: white;
+  font-size: 14px;
+  margin-bottom: 0.75rem;
+  &:focus {
+    outline: none;
+    border-color: $primary;
+  }
+}
+
+.add-bookmark-toggle {
+  background-color: $primary;
+  color: white;
+  padding: 0.5rem;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 600;
+  width: 100%;
+  margin-bottom: 1rem;
+  transition: $transition;
+  text-align: center;
+  &:hover {
+    background-color: $secondary;
+  }
+}
+
+.add-bookmark-form {
+  background-color: $bg-card;
+  padding: 0.75rem;
+  border-radius: 6px;
+  margin-bottom: 1rem;
+  border: 1px solid #444;
+
+  h3 {
+    font-size: 1rem;
+    margin-bottom: 0.5rem;
+    color: white;
+  }
+
+  .form-group {
+    margin-bottom: 0.5rem;
+    label {
+      display: block;
+      font-size: 11px;
+      color: $text-muted;
+      margin-bottom: 0.25rem;
+    }
+    input, textarea {
+      width: 100%;
+      padding: 0.4rem;
+      border-radius: 4px;
+      border: 1px solid #555;
+      background-color: #222;
+      color: white;
+      font-size: 13px;
+      &:focus {
+        outline: none;
+        border-color: $primary;
+      }
+    }
+    textarea {
+      resize: vertical;
+      height: 60px;
+    }
+  }
+
+  .form-actions {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 0.75rem;
+
+    button {
+      flex: 1;
+      padding: 0.4rem;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-weight: 500;
+      transition: $transition;
+    }
+
+    .btn-submit {
+      background-color: $primary;
+      color: white;
+      &:hover {
+        background-color: $secondary;
+      }
+    }
+
+    .btn-cancel {
+      background-color: #555;
+      color: white;
+      &:hover {
+        background-color: #666;
+      }
+    }
+  }
+}
+
+.video-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.video-card {
+  background-color: $bg-card;
+  border-radius: 6px;
+  border: 1px solid #3d3d3d;
+  overflow: hidden;
+  transition: $transition;
+
+  &.expanded {
+    border-color: $primary;
+  }
+
+  .video-card-header {
+    padding: 0.75rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    cursor: pointer;
+    background-color: rgba(255, 255, 255, 0.02);
+    &:hover {
+      background-color: rgba(255, 255, 255, 0.05);
+    }
+
+    .video-title {
+      font-weight: 600;
+      font-size: 14px;
+      color: white;
+      flex: 1;
+      margin-right: 0.5rem;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+    }
+
+    .video-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+
+      .delete-video-btn {
+        background: transparent;
+        border: none;
+        color: #ff4d4d;
+        cursor: pointer;
+        padding: 0.25rem;
+        font-size: 1rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: $transition;
+        &:hover {
+          color: #ff1a1a;
+          transform: scale(1.1);
+        }
+      }
+
+      .collapse-icon {
+        font-size: 0.75rem;
+        color: $text-muted;
+        transition: transform 0.2s;
+        &.rotated {
+          transform: rotate(180deg);
+        }
+      }
+    }
+  }
+
+  .timestamps-list {
+    padding: 0 0.75rem 0.75rem 0.75rem;
+    border-top: 1px solid #3d3d3d;
+    background-color: rgba(0, 0, 0, 0.15);
+  }
+}
+
+.timestamp-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid #3d3d3d;
+  gap: 0.5rem;
+
+  &:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+  }
+
+  .timestamp-content {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.5rem;
+    flex: 1;
+
+    .timestamp-link {
+      background-color: rgba(141, 85, 193, 0.2);
+      color: lighten($primary, 10%);
+      padding: 0.15rem 0.4rem;
+      border-radius: 4px;
+      font-size: 12px;
+      font-family: monospace;
+      font-weight: bold;
+      border: none;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: $transition;
+      &:hover {
+        background-color: $primary;
+        color: white;
+      }
+    }
+
+    .timestamp-desc {
+      color: #ddd;
+      font-size: 13px;
+      word-break: break-word;
+
+      .new-timestamp-span {
+        color: $text-muted;
+        font-style: italic;
+      }
+    }
+  }
+
+  .timestamp-actions {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+
+    button {
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      padding: 0.2rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: $transition;
+    }
+
+    .edit-ts-btn {
+      color: $text-muted;
+      &:hover {
+        color: $primary;
+      }
+    }
+
+    .delete-ts-btn {
+      color: $text-muted;
+      &:hover {
+        color: #ff4d4d;
+      }
+    }
+  }
+}
+
+.edit-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.7);
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+}
+
+.edit-modal {
+  background-color: $bg-card;
+  border: 1px solid #444;
+  border-radius: 8px;
+  width: 100%;
+  max-width: 320px;
+  padding: 1rem;
+  color: white;
+  z-index: 101;
+
+  h4 {
+    font-size: 1.1rem;
+    margin-bottom: 0.5rem;
+    color: white;
+  }
+
+  p {
+    font-size: 12px;
+    color: $primary;
+    font-weight: bold;
+    margin-bottom: 0.75rem;
+  }
+
+  textarea {
+    width: 100%;
+    height: 120px;
+    padding: 0.5rem;
+    border-radius: 4px;
+    border: 1px solid #555;
+    background-color: #222;
+    color: white;
+    font-size: 13px;
+    margin-bottom: 1rem;
+    resize: vertical;
+    &:focus {
+      outline: none;
+      border-color: $primary;
+    }
+  }
+
+  .modal-actions {
+    display: flex;
+    gap: 0.5rem;
+
+    button {
+      flex: 1;
+      padding: 0.5rem;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-weight: 500;
+      transition: $transition;
+    }
+
+    .btn-save {
+      background-color: $primary;
+      color: white;
+      &:hover {
+        background-color: $secondary;
+      }
+    }
+
+    .btn-cancel {
+      background-color: #555;
+      color: white;
+      &:hover {
+        background-color: #666;
+      }
+    }
+  }
+}
+
+.empty-state {
+  text-align: center;
+  padding: 2rem 1rem;
+  color: $text-muted;
+
+  p {
+    margin-bottom: 1rem;
+  }
+
+  a {
+    display: inline-block;
+    background-color: $primary;
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    font-weight: 500;
+    &:hover {
+      background-color: $secondary;
+    }
+  }
+}
